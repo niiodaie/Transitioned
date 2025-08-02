@@ -1,527 +1,349 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button.jsx'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
-import { Badge } from '@/components/ui/badge.jsx'
-import { Separator } from '@/components/ui/separator.jsx'
-import { ScrollArea } from '@/components/ui/scroll-area.jsx'
-import { FileText, Shield, Zap, Users, Lightbulb, Settings, ChevronRight } from 'lucide-react'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [activeSection, setActiveSection] = useState('overview')
+  const [candleCount, setCandleCount] = useState(47);
+  const [showTributeForm, setShowTributeForm] = useState(false);
+  const [tributeName, setTributeName] = useState('');
+  const [tributeMessage, setTributeMessage] = useState('');
+  const [tributes, setTributes] = useState([
+    { name: 'Emily', message: 'You taught me how to see the world with curiosity. Rest well, John ❤️', time: '2 days ago' },
+    { name: 'Raymond', message: 'Miss your music already, brother. Say hi to Dad for me.', time: '3 days ago' },
+    { name: 'Sarah Johnson', message: 'Mr. Smith was the best teacher I ever had. He made learning fun and always believed in us.', time: '4 days ago' }
+  ]);
+  const [currentLang, setCurrentLang] = useState('en');
+  const [showAIMonologue, setShowAIMonologue] = useState(false);
 
-  const sections = [
-    { id: 'overview', title: 'Overview', icon: FileText },
-    { id: 'security', title: 'Security', icon: Shield },
-    { id: 'performance', title: 'Performance', icon: Zap },
-    { id: 'ux', title: 'User Experience', icon: Users },
-    { id: 'future', title: 'Future Features', icon: Lightbulb },
-    { id: 'development', title: 'Development', icon: Settings }
-  ]
-
-  const coreFeatures = [
-    {
-      title: "Authentication",
-      description: "Email/password, phone number, and social logins (Google, Apple). Role-based access (Admin, Contributor, Viewer)."
+  const languages = {
+    en: {
+      title: 'John O. Smith',
+      dates: 'August 4, 1952 – December 1, 2023',
+      location: 'Atlanta, GA',
+      lifeStory: 'Life Story',
+      memorialFund: 'Memorial Fund',
+      tributes: 'Tributes',
+      lightCandle: 'Light a Candle',
+      donate: 'Donate',
+      postTribute: 'Post a Tribute',
+      yourName: 'Your name',
+      writeMessage: 'Write your tribute message...',
+      submit: 'Submit Tribute',
+      aiMonologue: 'AI Memorial Speech',
+      generateSpeech: 'Generate Memorial Speech',
+      selectLanguage: 'Language'
     },
-    {
-      title: "Memorial Page",
-      description: "Facebook-style pages with customizable info, media gallery, tribute wall, and admin controls."
+    ha: {
+      title: 'John O. Smith',
+      dates: 'Agusta 4, 1952 – Disamba 1, 2023',
+      location: 'Atlanta, GA',
+      lifeStory: 'Tarihin Rayuwa',
+      memorialFund: 'Asusun Tunawa',
+      tributes: 'Saƙonnin Tunawa',
+      lightCandle: 'Haska Kyandir',
+      donate: 'Bayar da Gudummawa',
+      postTribute: 'Bar Saƙon Tuna',
+      yourName: 'Sunan ka',
+      writeMessage: 'Rubuta saƙon tunawa...',
+      submit: 'Aika Saƙon Tunawa',
+      aiMonologue: 'Jawabin AI na Tunawa',
+      generateSpeech: 'Samar da Jawabin Tunawa',
+      selectLanguage: 'Harshe'
     },
-    {
-      title: "Free vs Pro Plan",
-      description: "Free: 1 memorial page, 5 photos. Pro: Unlimited media, AI Monologue, fundraising, custom domain."
-    },
-    {
-      title: "Fundraising Widget",
-      description: "GoFundMe-style functionality with Stripe integration, progress tracking, and supporter lists."
-    },
-    {
-      title: "AI Monologue",
-      description: "AI-generated tributes using OpenAI, with future voice integration via ElevenLabs/D-ID."
-    },
-    {
-      title: "Internationalization",
-      description: "Support for 9 languages with auto-detection and manual language selector."
+    sw: {
+      title: 'John O. Smith',
+      dates: 'Agosti 4, 1952 – Desemba 1, 2023',
+      location: 'Atlanta, GA',
+      lifeStory: 'Historia ya Maisha',
+      memorialFund: 'Mfuko wa Kumbukumbu',
+      tributes: 'Ushuhuda',
+      lightCandle: 'Washa Taa',
+      donate: 'Toa Mchango',
+      postTribute: 'Andika Ushuhuda',
+      yourName: 'Jina lako',
+      writeMessage: 'Andika ujumbe wako wa ushuhuda...',
+      submit: 'Tuma Ushuhuda',
+      aiMonologue: 'Hotuba ya AI ya Kumbukumbu',
+      generateSpeech: 'Tengeneza Hotuba ya Kumbukumbu',
+      selectLanguage: 'Lugha'
     }
-  ]
+  };
 
-  const techStack = [
-    { category: "Frontend", tech: "React + TailwindCSS" },
-    { category: "Backend", tech: "Supabase (PostgreSQL, Auth)" },
-    { category: "Payments", tech: "Stripe / LemonSqueezy" },
-    { category: "Hosting", tech: "Vercel" },
-    { category: "AI", tech: "OpenAI (GPT-4)" },
-    { category: "Translations", tech: "i18next + react-i18next" }
-  ]
+  const t = languages[currentLang];
 
-  const securityMeasures = [
-    "Strong password policies with bcrypt hashing",
-    "App-based MFA (TOTP preferred over SMS)",
-    "Rate limiting and account lockout protection",
-    "Secure token storage with HTTP-only flags",
-    "Granular RBAC permissions",
-    "PCI-compliant Stripe integration",
-    "Comprehensive audit logging"
-  ]
+  const handleLightCandle = () => {
+    setCandleCount(prev => prev + 1);
+  };
 
-  const performanceOptimizations = [
-    "Database indexing for key fields (user_id, memorial_id, tribute_id)",
-    "Lazy loading for media content",
-    "Image compression (WebP) and video optimization (H.264/H.265)",
-    "CDN integration for global content delivery",
-    "Asynchronous AI monologue processing",
-    "Intelligent caching strategies"
-  ]
-
-  const uxEnhancements = [
-    "Guided onboarding wizard for memorial creation",
-    "Rich text editor for tribute wall",
-    "Reply threads for community interaction",
-    "Automated and manual content moderation",
-    "Customizable PDF Memory Book with preview",
-    "Digest emails for low-frequency users"
-  ]
-
-  const futureFeatures = [
-    "Audio uploads (voice notes, songs)",
-    "Group memorials for organizations",
-    "Virtual events with RSVP functionality",
-    "Private messaging and support groups",
-    "AI-powered story timeline generation",
-    "WCAG AA accessibility compliance",
-    "Cultural sensitivity templates by region"
-  ]
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'overview':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">MVP Specification Analysis</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Comprehensive analysis of Transitioned.Life - a sacred, social space for memorializing loved ones, 
-                creating digital memorial pages, sharing tributes, and gathering community support.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Core Features
-                </CardTitle>
-                <CardDescription>
-                  Essential functionality for the MVP platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {coreFeatures.map((feature, index) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <h4 className="font-semibold mb-2">{feature.title}</h4>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Technical Stack</CardTitle>
-                <CardDescription>
-                  Modern, scalable technologies chosen for reliability and performance
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {techStack.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                      <span className="font-medium">{item.category}</span>
-                      <Badge variant="secondary">{item.tech}</Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-
-      case 'security':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">Security Considerations</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Comprehensive security measures for protecting sensitive user data and financial transactions.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Security Measures
-                </CardTitle>
-                <CardDescription>
-                  Multi-layered security approach based on industry best practices
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {securityMeasures.map((measure, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">{measure}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Authentication Security</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  The updated specification emphasizes robust authentication protocols with app-based TOTP 
-                  (Time-based One-Time Password) as the preferred MFA method, which is more secure than 
-                  SMS-based MFA due to SIM swap attack vulnerabilities.
-                </p>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h4 className="font-semibold mb-2">Multi-Factor Authentication</h4>
-                    <p className="text-sm">App-based authenticators (Google Authenticator, Authy) or hardware security keys (YubiKey)</p>
-                  </div>
-                  <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <h4 className="font-semibold mb-2">Session Management</h4>
-                    <p className="text-sm">HTTP-only flags, secure flags, and automatic expiration on logout</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-
-      case 'performance':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">Performance & Scalability</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Strategic optimizations to ensure platform responsiveness and growth capability.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  Performance Optimizations
-                </CardTitle>
-                <CardDescription>
-                  Technical strategies for handling growth and maintaining responsiveness
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {performanceOptimizations.map((optimization, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">{optimization}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Database Optimization</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Proper indexing on frequently queried columns (user_id, memorial_id, tribute_id) 
-                    significantly speeds up read operations and ensures smooth performance as the database grows.
-                  </p>
-                  <Badge variant="outline">PostgreSQL + Supabase</Badge>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Media Handling</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Comprehensive media optimization including lazy loading, modern compression formats 
-                    (WebP, H.264/H.265), and CDN integration for global content delivery.
-                  </p>
-                  <Badge variant="outline">CDN + Compression</Badge>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )
-
-      case 'ux':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">User Experience Enhancements</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Thoughtful design improvements for a compassionate and supportive user journey.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  UX Improvements
-                </CardTitle>
-                <CardDescription>
-                  Features designed to support users through their memorial creation journey
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {uxEnhancements.map((enhancement, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">{enhancement}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Guided Onboarding</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Step-by-step wizard with progress indicators and pre-filled suggestions 
-                    to reduce cognitive load during memorial creation.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Rich Interactions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Enhanced tribute wall with rich text editing, reply threads, 
-                    and community-driven conversations around shared memories.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Personalized Content</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Customizable PDF Memory Books with preview functionality 
-                    and digest emails for maintaining engagement.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )
-
-      case 'future':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">Future Features</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Roadmap for long-term platform evolution and enhanced user value.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5" />
-                  Planned Enhancements
-                </CardTitle>
-                <CardDescription>
-                  Strategic features for expanding platform capabilities and community engagement
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {futureFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Enhanced Media</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Audio uploads including voice notes and favorite songs add deeply personal 
-                    dimensions to memorial pages, allowing users to share spoken memories.
-                  </p>
-                  <Badge variant="secondary">Audio Integration</Badge>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Community Features</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Group memorials, virtual events, and private messaging transform the platform 
-                    into a dynamic community hub for collective remembrance and support.
-                  </p>
-                  <Badge variant="secondary">Social Platform</Badge>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )
-
-      case 'development':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold mb-4">Development Process</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Structured approach to building a robust and maintainable platform.
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Development Order
-                </CardTitle>
-                <CardDescription>
-                  Prioritized implementation sequence for efficient development
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    "Auth system (Email, Phone, Google, Apple)",
-                    "Memorial page builder (with admin role)",
-                    "Tribute wall w/ reply & moderation",
-                    "Fundraiser widget (Stripe test mode)",
-                    "User dashboard",
-                    "AI monologue trigger (stub or working)",
-                    "Language detection + selector",
-                    "Landing page",
-                    "Stripe Pro plan upgrade UI",
-                    "Mobile responsiveness polish"
-                  ].map((step, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-                      <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">
-                        {index + 1}
-                      </div>
-                      <span className="text-sm">{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Best Practices</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <h4 className="font-semibold mb-2">Testing Strategy</h4>
-                    <p className="text-sm">Comprehensive unit, integration, and end-to-end testing</p>
-                  </div>
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <h4 className="font-semibold mb-2">CI/CD Pipeline</h4>
-                    <p className="text-sm">Automated build, test, and deployment processes</p>
-                  </div>
-                  <div className="p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                    <h4 className="font-semibold mb-2">Monitoring</h4>
-                    <p className="text-sm">Robust logging and infrastructure monitoring</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-
-      default:
-        return null
+  const handleSubmitTribute = (e) => {
+    e.preventDefault();
+    if (tributeName.trim() && tributeMessage.trim()) {
+      setTributes([
+        { name: tributeName, message: tributeMessage, time: 'Just now' },
+        ...tributes
+      ]);
+      setTributeName('');
+      setTributeMessage('');
+      setShowTributeForm(false);
     }
-  }
+  };
+
+  const generateAIMonologue = async () => {
+    setShowAIMonologue(true);
+    // This would integrate with OpenAI API in a real implementation
+    // For now, we'll show a placeholder
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Navigation */}
-          <div className="lg:w-64 flex-shrink-0">
-            <Card className="sticky top-8">
-              <CardHeader>
-                <CardTitle className="text-lg">Navigation</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <nav className="space-y-1">
-                  {sections.map((section) => {
-                    const Icon = section.icon
-                    return (
-                      <button
-                        key={section.id}
-                        onClick={() => setActiveSection(section.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-muted ${
-                          activeSection === section.id 
-                            ? 'bg-muted text-foreground border-r-2 border-primary' 
-                            : 'text-muted-foreground'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {section.title}
-                        {activeSection === section.id && <ChevronRight className="h-4 w-4 ml-auto" />}
-                      </button>
-                    )
-                  })}
-                </nav>
-              </CardContent>
-            </Card>
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+      {/* Header with Language Selector */}
+      <header className="sticky top-0 bg-white/90 backdrop-blur-sm border-b border-amber-200 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="text-xl font-serif text-amber-900">Transitioned.Life</div>
+          <select 
+            value={currentLang} 
+            onChange={(e) => setCurrentLang(e.target.value)}
+            className="bg-white border border-amber-300 rounded px-3 py-1 text-amber-800"
+          >
+            <option value="en">🇺🇸 English</option>
+            <option value="ha">🇳🇬 Hausa</option>
+            <option value="sw">🇹🇿 Kiswahili</option>
+          </select>
+        </div>
+      </header>
+
+      {/* Cover Image */}
+      <div className="h-64 bg-gradient-to-r from-amber-300 via-orange-300 to-amber-400 relative">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+      </div>
+
+      {/* Profile Section */}
+      <div className="max-w-6xl mx-auto px-4 -mt-16 relative z-10">
+        <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
+          <div className="w-32 h-32 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full border-4 border-white shadow-xl flex items-center justify-center text-4xl text-white font-serif">
+            JS
+          </div>
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-4xl font-serif text-amber-900 mb-2">{t.title}</h1>
+            <p className="text-lg text-amber-700 mb-2">{t.dates}</p>
+            <p className="text-amber-600 mb-4">📍 {t.location}</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <button 
+                onClick={handleLightCandle}
+                className="bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                🕯️ {t.lightCandle} ({candleCount} lit)
+              </button>
+              <button 
+                onClick={() => setShowTributeForm(!showTributeForm)}
+                className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg text-lg transition-all duration-300"
+              >
+                💬 {t.postTribute}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Tribute Form */}
+        {showTributeForm && (
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 mb-8 shadow-lg">
+            <h3 className="text-xl font-serif text-amber-900 mb-4">{t.postTribute}</h3>
+            <form onSubmit={handleSubmitTribute} className="space-y-4">
+              <input
+                type="text"
+                placeholder={t.yourName}
+                value={tributeName}
+                onChange={(e) => setTributeName(e.target.value)}
+                className="w-full px-4 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                required
+              />
+              <textarea
+                placeholder={t.writeMessage}
+                value={tributeMessage}
+                onChange={(e) => setTributeMessage(e.target.value)}
+                rows={4}
+                className="w-full px-4 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                required
+              />
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg transition-colors"
+                >
+                  {t.submit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowTributeForm(false)}
+                  className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Life Story */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h2 className="text-2xl font-serif text-amber-900 mb-4">❤️ {t.lifeStory}</h2>
+              <p className="text-amber-800 leading-relaxed font-serif text-lg">
+                John was a father, teacher, and jazz lover who lived a life of joy, service, and laughter. 
+                He loved gardening, community events, and spending time with his grandchildren. His warm 
+                smile and generous spirit touched the lives of countless students and community members 
+                throughout his 34-year teaching career at Roosevelt Elementary School.
+              </p>
+              
+              {/* Timeline */}
+              <div className="mt-8">
+                <h3 className="text-xl font-serif text-amber-900 mb-4">📅 Life Timeline</h3>
+                <div className="space-y-3">
+                  {[
+                    { year: '1952', event: 'Born in Atlanta, Georgia' },
+                    { year: '1974', event: 'Graduated from University of Georgia' },
+                    { year: '1976', event: 'Started teaching at Roosevelt Elementary' },
+                    { year: '1980', event: 'Married his beloved wife, Margaret' },
+                    { year: '2010', event: 'Retired after 34 years of teaching' },
+                    { year: '2023', event: 'Passed away peacefully surrounded by family' }
+                  ].map((item, index) => (
+                    <div key={index} className="flex gap-4 items-start">
+                      <span className="bg-amber-200 text-amber-900 px-3 py-1 rounded-full text-sm font-semibold min-w-16 text-center">
+                        {item.year}
+                      </span>
+                      <p className="text-amber-800 flex-1">{item.event}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Photo Gallery */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h2 className="text-2xl font-serif text-amber-900 mb-4">📸 Photo Gallery</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="aspect-square bg-gradient-to-br from-amber-200 to-orange-300 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer flex items-center justify-center text-amber-700 font-serif">
+                    Photo {i}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Monologue Section */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h2 className="text-2xl font-serif text-amber-900 mb-4">🤖 {t.aiMonologue}</h2>
+              <p className="text-amber-700 mb-4">
+                Generate a personalized memorial speech using AI based on John's life story and tributes.
+              </p>
+              <button
+                onClick={generateAIMonologue}
+                className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors mb-4"
+              >
+                ✨ {t.generateSpeech}
+              </button>
+              
+              {showAIMonologue && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
+                  <h4 className="font-semibold text-purple-900 mb-2">Generated Memorial Speech:</h4>
+                  <p className="text-purple-800 italic leading-relaxed">
+                    "We gather today to remember John O. Smith, a man whose life was a testament to the power of 
+                    education, love, and community service. For 34 years, John shaped young minds at Roosevelt 
+                    Elementary School, teaching not just lessons from books, but lessons of curiosity, kindness, 
+                    and joy. His love for jazz music filled his home with melody, just as his love for his family 
+                    and students filled their hearts with warmth. John's garden was a reflection of his nurturing 
+                    spirit - he planted seeds of knowledge in his students and seeds of love in his family, 
+                    watching both bloom into something beautiful. Though we mourn his passing, we celebrate a 
+                    life well-lived, a legacy of laughter, and the countless lives he touched with his generous spirit."
+                  </p>
+                  <p className="text-sm text-purple-600 mt-2">
+                    <em>This memorial speech was generated using AI based on John's life story and the tributes shared by loved ones.</em>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Tributes */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h2 className="text-2xl font-serif text-amber-900 mb-4">💬 {t.tributes}</h2>
+              <div className="space-y-4">
+                {tributes.map((tribute, index) => (
+                  <div key={index} className="border-b border-amber-200 pb-4 last:border-b-0">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        {tribute.name[0]}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-amber-900">{tribute.name}</h4>
+                          <span className="text-xs text-amber-600">• {tribute.time}</span>
+                        </div>
+                        <p className="text-amber-800 font-serif">{tribute.message}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <ScrollArea className="h-[calc(100vh-4rem)]">
-              {renderContent()}
-            </ScrollArea>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Memorial Fund */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h3 className="text-xl font-serif text-amber-900 mb-4">💰 {t.memorialFund}</h3>
+              <div className="text-center mb-4">
+                <div className="text-3xl font-bold text-amber-900">$3,620</div>
+                <div className="text-sm text-amber-600">raised of $5,000 goal</div>
+              </div>
+              <div className="w-full bg-amber-200 rounded-full h-4 mb-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 h-4 rounded-full transition-all duration-1000 ease-out" 
+                  style={{width: '72.4%'}}
+                ></div>
+              </div>
+              <div className="text-center text-sm text-amber-700 mb-4">
+                72% of goal reached
+              </div>
+              <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors">
+                ❤️ {t.donate}
+              </button>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+              <h3 className="text-xl font-serif text-amber-900 mb-4">🔔 Recent Activity</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2 text-amber-700">
+                  <span className="text-amber-500">🕯️</span>
+                  <span>3 candles lit today</span>
+                </div>
+                <div className="flex items-center gap-2 text-amber-700">
+                  <span className="text-green-500">💰</span>
+                  <span>$150 donated by Maria</span>
+                </div>
+                <div className="flex items-center gap-2 text-amber-700">
+                  <span className="text-blue-500">💬</span>
+                  <span>New tribute from Sarah</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-16 bg-amber-900 text-amber-100 py-8">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="font-serif text-lg mb-2">In loving memory of John O. Smith</p>
+          <p className="text-amber-300">A life well-lived, a legacy of love</p>
+        </div>
+      </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
 

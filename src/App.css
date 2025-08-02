@@ -118,3 +118,183 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Memorial Page Custom Styles */
+:root {
+  /* Memorial-specific color palette - warm, respectful tones */
+  --memorial-primary: #8B5A3C; /* Warm brown */
+  --memorial-secondary: #D4B5A0; /* Light brown/beige */
+  --memorial-accent: #F5E6D3; /* Cream */
+  --memorial-text: #2C1810; /* Dark brown */
+  --memorial-light: #FAF7F2; /* Off-white */
+  --memorial-gold: #D4AF37; /* Gold for candles */
+  --memorial-green: #7A8471; /* Sage green */
+}
+
+/* Override primary colors for memorial theme */
+.memorial-theme {
+  --primary: var(--memorial-primary);
+  --primary-foreground: var(--memorial-light);
+  --background: var(--memorial-light);
+  --foreground: var(--memorial-text);
+  --card: #FFFFFF;
+  --muted: var(--memorial-accent);
+  --accent: var(--memorial-secondary);
+}
+
+/* Typography - Serif fonts for elegance */
+.memorial-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 600;
+  color: var(--memorial-text);
+}
+
+.memorial-subtitle {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 400;
+  color: var(--memorial-text);
+  opacity: 0.8;
+}
+
+.memorial-body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7;
+  color: var(--memorial-text);
+}
+
+/* Cover image styling */
+.memorial-cover {
+  background: linear-gradient(135deg, var(--memorial-accent) 0%, var(--memorial-secondary) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.memorial-cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(139, 90, 60, 0.1);
+  z-index: 1;
+}
+
+/* Profile image styling */
+.memorial-profile-img {
+  border: 4px solid white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.memorial-profile-img:hover {
+  transform: scale(1.02);
+}
+
+/* Candle button styling */
+.candle-button {
+  background: linear-gradient(135deg, var(--memorial-gold) 0%, #B8860B 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+.candle-button:hover {
+  background: linear-gradient(135deg, #B8860B 0%, var(--memorial-gold) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+/* Tribute wall styling */
+.tribute-card {
+  background: white;
+  border: 1px solid rgba(139, 90, 60, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.tribute-card:hover {
+  box-shadow: 0 8px 24px rgba(139, 90, 60, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Fundraiser progress bar */
+.fundraiser-progress {
+  background: var(--memorial-accent);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fundraiser-progress-fill {
+  background: linear-gradient(90deg, var(--memorial-green) 0%, #9CAF88 100%);
+  transition: width 0.8s ease;
+}
+
+/* Image gallery styling */
+.gallery-image {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.gallery-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Language selector styling */
+.language-selector {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 90, 60, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .memorial-title {
+    font-size: 1.75rem;
+  }
+  
+  .memorial-subtitle {
+    font-size: 1rem;
+  }
+  
+  .memorial-profile-img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Smooth animations */
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
